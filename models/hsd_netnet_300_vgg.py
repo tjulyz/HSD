@@ -337,7 +337,7 @@ class VGG16Extractor(nn.Module):
                 source_38 = x
         #38x38
         c2 = x
-        print(c2.shape)
+        # print(c2.shape)
         # c2 = self.arm_trans[0](c2)
         arm_sources_init.append(c2)
 
@@ -345,20 +345,20 @@ class VGG16Extractor(nn.Module):
             x = self.vgg[k](x)
         #19x19
         c3 = x
-        print(c3.shape)
+        # print(c3.shape)
         # c3 = self.arm_trans[1](c3)
         arm_sources_init.append(c3)
 
         # 10x10
         x = self.extras[0](x)
-        print(x.shape)
+        # print(x.shape)
         # c4 = x
         # c4 = self.arm_trans[2](x)
         arm_sources_init.append(x)
 
         # 5x5
         x = self.extras[1](x)
-        print(x.shape)
+        # print(x.shape)
         # c5 = x
         # c5 = self.arm_trans[3](x)
         arm_sources_init.append(x)
