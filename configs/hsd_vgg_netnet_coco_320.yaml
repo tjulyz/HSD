@@ -1,8 +1,8 @@
 MODEL:
-  TYPE: hsd_vgg_netnet
+  TYPE: hsd_netnet_vgg
   SIZE: '300'
   CASCADE: True
-  CONV_BODY: hsd_vgg_netnet_300.hsd_vgg
+  CONV_BODY: hsd_netnet_300_vgg.hsd_vgg
   NUM_CLASSES: 81
   LOAD_PRETRAINED_WEIGHTS: True
   PRETRAIN_WEIGHTS: './weights/pretrained_models/vgg16_reducedfc.pth'
