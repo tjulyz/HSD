@@ -227,17 +227,17 @@ class FEModule(nn.Module):
         return sasc_output
 
 def trans_head():
-    arm_trans1 = []
-    arm_trans1 += [BasicConv(512, 256, kernel_size=1, stride=1, padding=0)]
-    arm_trans1 += [BasicConv(1024, 256, kernel_size=1, stride=1, padding=0)]
-    arm_trans1 += [BasicConv(256, 256, kernel_size=1, stride=1, padding=0)]
-    arm_trans1 += [BasicConv(256, 256, kernel_size=1, stride=1, padding=0)]
+    # arm_trans1 = []
+    # arm_trans1 += [BasicConv(512, 256, kernel_size=1, stride=1, padding=0)]
+    # arm_trans1 += [BasicConv(1024, 256, kernel_size=1, stride=1, padding=0)]
+    # arm_trans1 += [BasicConv(256, 256, kernel_size=1, stride=1, padding=0)]
+    # arm_trans1 += [BasicConv(256, 256, kernel_size=1, stride=1, padding=0)]
 
-    # arm_trans = []
-    # arm_trans += [BasicConv(512, 256, kernel_size=3, stride=1, padding=1)]
-    # arm_trans += [BasicConv(1024, 256, kernel_size=3, stride=1, padding=1)]
-    # arm_trans += [BasicConv(256, 256, kernel_size=3, stride=1, padding=1)]
-    # arm_trans += [BasicConv(256, 256, kernel_size=3, stride=1, padding=1)]
+    arm_trans = []
+    arm_trans += [BasicConv(512, 256, kernel_size=3, stride=1, padding=1)]
+    arm_trans += [BasicConv(1024, 256, kernel_size=3, stride=1, padding=1)]
+    arm_trans += [BasicConv(256, 256, kernel_size=3, stride=1, padding=1)]
+    arm_trans += [BasicConv(256, 256, kernel_size=3, stride=1, padding=1)]
 
     orm_trans = []
     orm_trans += [BasicConv(256, 512, kernel_size=3, stride=1, padding=1)]
@@ -245,7 +245,7 @@ def trans_head():
     orm_trans += [BasicConv(256, 512, kernel_size=3, stride=1, padding=1)]
     orm_trans += [BasicConv(256, 256, kernel_size=3, stride=1, padding=1)]
 
-    return arm_trans1, orm_trans
+    return arm_trans, orm_trans
 
 class VGG16Extractor(nn.Module):
     def __init__(self, size, channel_size='48'):
@@ -262,21 +262,20 @@ class VGG16Extractor(nn.Module):
         ################# using our netnet
         ################################################################################
         # generate new_sources_with fusion
-        self.conv75_38 = BasicConv(256, 512, kernel_size=1)
-        self.conv38 = BasicConv(512, 512, kernel_size=1)
-        self.conv19_38 = BasicConv(1024, 512, kernel_size=1)
+        self.conv75_38 = BasicConv(256, 256, kernel_size=1)
+        self.conv38 = BasicConv(256, 256, kernel_size=1)
+        self.conv19_38 = BasicConv(256, 256, kernel_size=1)
 
-        self.conv38_19 = BasicConv(512, 1024, kernel_size=1)
-        self.conv19 = BasicConv(1024, 1024, kernel_size=1)
-        self.conv10_19 = BasicConv(512, 1024, kernel_size=1)
+        self.conv38_19 = BasicConv(256, 256, kernel_size=1)
+        self.conv19 = BasicConv(256, 256, kernel_size=1)
+        self.conv10_19 = BasicConv(256, 256, kernel_size=1)
 
-        self.conv19_10 = BasicConv(1024, 512, kernel_size=1)
-        self.conv10 = BasicConv(512, 512, kernel_size=1)
-        self.conv5_10 = BasicConv(256, 512, kernel_size=1)
+        self.conv19_10 = BasicConv(256, 256, kernel_size=1)
+        self.conv10 = BasicConv(256, 256, kernel_size=1)
+        self.conv5_10 = BasicConv(256, 256, kernel_size=1)
 
-        self.conv10_5 = BasicConv(512, 256, kernel_size=1)
+        self.conv10_5 = BasicConv(256, 256, kernel_size=1)
         self.conv5 = BasicConv(256, 256, kernel_size=1)
-        self.conv3_5 = BasicConv(256, 256, kernel_size=1)
 
         self.size0 = 40
         self.size1 = 20
@@ -284,17 +283,17 @@ class VGG16Extractor(nn.Module):
         self.size3 = 5
 
         # half attention
-        self.attention_t5_19 = G_attention(256, 1024, self.size1)
-        self.attention_t10_38 = G_attention(512, 512, self.size0)
+        self.attention_t5_19 = G_attention(256, 256, self.size1)
+        self.attention_t10_38 = G_attention(256, 256, self.size0)
         #
         # # half add conv
-        self.BasicResConv19 = BasicResConv(1024)
-        self.BasicResConv38 = BasicResConv(512)
-        self.BasicResConv10 = BasicResConv(512)
+        self.BasicResConv19 = BasicResConv(256)
+        self.BasicResConv38 = BasicResConv(256)
+        self.BasicResConv10 = BasicResConv(256)
         self.BasicResConv5 = BasicResConv(256)
 
-        self.BasicConv10 = BasicConv(512, 512, kernel_size=1)
-        self.BasicConv5 = BasicConv(1024, 256, kernel_size=1)
+        self.BasicConv10 = BasicConv(256, 256, kernel_size=1)
+        self.BasicConv5 = BasicConv(256, 256, kernel_size=1)
         ###############################################
 
 
@@ -329,68 +328,70 @@ class VGG16Extractor(nn.Module):
                     2: localization layers, Shape: [batch,num_priors*4]
                     3: priorbox layers, Shape: [2,num_priors*4]
         """
-        arm_sources_init = list()
         arm_sources = list()
 
         for i in range(23):
-            if i==16:
-                source_38 = x
             x = self.vgg[i](x)
+            if i == 16:
+                source_38 = x
         #38x38
         c2 = x
-        # c2 = self.arm_trans[0](c2)
-        arm_sources_init.append(c2)
+        c2 = self.arm_trans[0](c2)
+        arm_sources.append(c2)
 
         for k in range(23, len(self.vgg)):
             x = self.vgg[k](x)
         #19x19
         c3 = x
-        # c3 = self.arm_trans[1](c3)
-        arm_sources_init.append(c3)
+        c3 = self.arm_trans[1](c3)
+        arm_sources.append(c3)
 
         # 10x10
         x = self.extras[0](x)
+
         # c4 = x
-        # c4 = self.arm_trans[2](x)
-        arm_sources_init.append(x)
+        c4 = self.arm_trans[2](x)
+        arm_sources.append(c4)
 
         # 5x5
         x = self.extras[1](x)
         # c5 = x
-        # c5 = self.arm_trans[3](x)
-        arm_sources_init.append(x)
+        c5 = self.arm_trans[3](x)
+        arm_sources.append(c5)
+
+
 
         #########################################################################
         # generate attention
         sources = []
         # generate 38
         feat_75_38 = self.conv75_38(source_38)
-        feat_19_38 = F.upsample_bilinear(self.conv19_38(arm_sources_init[1]), size=self.size0)
+        feat_19_38 = F.upsample_bilinear(self.conv19_38(arm_sources[1]), size=self.size0)
         # feat_38 = self.conv38(sources_init[0])
-        s_38 = feat_19_38 + arm_sources_init[0] + feat_75_38
+        s_38 = feat_19_38 + arm_sources[0] + feat_75_38
         sources.append(s_38)
 
-        feat_38_19 = F.adaptive_avg_pool2d(self.conv38_19(arm_sources_init[0]), self.size1)
-        feat_10_19 = F.upsample_bilinear(self.conv10_19(arm_sources_init[2]), size=self.size1)
+        feat_38_19 = F.adaptive_avg_pool2d(self.conv38_19(arm_sources[0]), self.size1)
+        feat_10_19 = F.upsample_bilinear(self.conv10_19(arm_sources[2]), size=self.size1)
         # feat_19 = self.conv19(sources_init[1])
-        s_19 = feat_38_19 + feat_10_19 + arm_sources_init[1]
+        s_19 = feat_38_19 + feat_10_19 + arm_sources[1]
         sources.append(s_19)
 
-        feat_19_10 = F.adaptive_avg_pool2d(self.conv19_10(arm_sources_init[1]), self.size2)
+        feat_19_10 = F.adaptive_avg_pool2d(self.conv19_10(arm_sources[1]), self.size2)
         # feat_10 = self.conv10(sources_init[2])
-        feat_5_10 = F.upsample_bilinear(self.conv5_10(arm_sources_init[3]),size=self.size2)
-        s_10 = feat_19_10 + arm_sources_init[2]+feat_5_10
+        feat_5_10 = F.upsample_bilinear(self.conv5_10(arm_sources[3]),size=self.size2)
+        s_10 = feat_19_10 + arm_sources[2]+feat_5_10
         sources.append(s_10)
 
-        feat_10_5 = F.adaptive_avg_pool2d(self.conv10_5(arm_sources_init[2]), self.size3)
+        feat_10_5 = F.adaptive_avg_pool2d(self.conv10_5(arm_sources[2]), self.size3)
         # feat_5 = self.conv5(sources_init[3])
-        s_5 = arm_sources_init[3] + feat_10_5
+        s_5 = arm_sources[3] + feat_10_5
         sources.append(s_5)
 
         ##########################################################################33
         # generate new_sources_with fusion
 
-
+        odm_sources = []
         # # half attention skip with conv
         att3 = self.attention_t5_19(sources[-1])
         att4 = self.attention_t10_38(sources[-2])
@@ -412,20 +413,20 @@ class VGG16Extractor(nn.Module):
         y3 = sources[3] + F.adaptive_avg_pool2d(y1_res, self.size3)
         y3 = self.BasicResConv5(y3)
 
-        arm_sources.append(self.arm_trans[0](y0))
-        arm_sources.append(self.arm_trans[1](y1))
-        arm_sources.append(self.arm_trans[2](y2))
-        arm_sources.append(self.arm_trans[3](y3))
+        odm_sources.append(self.fe1(y0))
+        odm_sources.append(self.fe1(y1))
+        odm_sources.append(self.fe1(y2))
+        odm_sources.append(self.orm_trans[3](y3))
         ###########################################################################
-
-        odm_sources = []
-        up = F.upsample(arm_sources[1], size=arm_sources[0].size()[2:], mode='bilinear')
-        odm_sources.append(self.fe1(arm_sources[0]))
-        up = F.upsample(arm_sources[2], size=arm_sources[1].size()[2:], mode='bilinear')
-        odm_sources.append(self.fe2(arm_sources[1]))
-        up = F.upsample(arm_sources[3], size=arm_sources[2].size()[2:], mode='bilinear')
-        odm_sources.append(self.fe3(arm_sources[2]))
-        odm_sources.append(self.orm_trans[3](arm_sources[3]))
+        #
+        # odm_sources = []
+        # up = F.upsample(arm_sources[1], size=arm_sources[0].size()[2:], mode='bilinear')
+        # odm_sources.append(self.fe1(arm_sources[0]))
+        # up = F.upsample(arm_sources[2], size=arm_sources[1].size()[2:], mode='bilinear')
+        # odm_sources.append(self.fe2(arm_sources[1]))
+        # up = F.upsample(arm_sources[3], size=arm_sources[2].size()[2:], mode='bilinear')
+        # odm_sources.append(self.fe3(arm_sources[2]))
+        # odm_sources.append(self.orm_trans[3](arm_sources[3]))
 
 
         return arm_sources, odm_sources
