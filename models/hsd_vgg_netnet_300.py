@@ -253,9 +253,9 @@ class VGG16Extractor(nn.Module):
         self.vgg = nn.ModuleList(vgg(base[str(size)], 3))
         self.extras = nn.ModuleList(add_extras(str(size)))
 
-        self.fe1 = FEModule(512,256)
-        self.fe2 = FEModule(512,256)
-        self.fe3 = FEModule(512,256)
+        self.fe1 = FEModule(256,256)
+        self.fe2 = FEModule(256,256)
+        self.fe3 = FEModule(256,256)
         self.arm_trans = nn.ModuleList(trans_head()[0])
         self.orm_trans = nn.ModuleList(trans_head()[1])
 
@@ -279,8 +279,8 @@ class VGG16Extractor(nn.Module):
         self.conv3_5 = BasicConv(256, 256, kernel_size=1)
 
         # half attention
-        self.attention_t5_19 = G_attention(256, 1024, 19)
-        self.attention_t10_38 = G_attention(512, 512, 38)
+        self.attention_t5_19 = G_attention(256, 1024, self.size1)
+        self.attention_t10_38 = G_attention(512, 512, self.size0)
         #
         # # half add conv
         self.BasicResConv19 = BasicResConv(1024)
@@ -291,6 +291,13 @@ class VGG16Extractor(nn.Module):
         self.BasicConv10 = BasicConv(512, 512, kernel_size=1)
         self.BasicConv5 = BasicConv(1024, 256, kernel_size=1)
         ###############################################
+        self.size0 = 40
+        self.size1 = 20
+        self.size2 = 10
+        self.size3 = 5
+
+
+        ####
 
 
         self._init_modules()
@@ -356,24 +363,24 @@ class VGG16Extractor(nn.Module):
         sources = []
         # generate 38
         feat_75_38 = self.conv75_38(source_38)
-        feat_19_38 = F.upsample_bilinear(self.conv19_38(arm_sources_init[1]), size=38)
+        feat_19_38 = F.upsample_bilinear(self.conv19_38(arm_sources_init[1]), size=self.size0)
         # feat_38 = self.conv38(sources_init[0])
         s_38 = feat_19_38 + arm_sources_init[0] + feat_75_38
         sources.append(s_38)
 
-        feat_38_19 = F.adaptive_avg_pool2d(self.conv38_19(arm_sources_init[0]), 19)
-        feat_10_19 = F.upsample_bilinear(self.conv10_19(arm_sources_init[2]), size=19)
+        feat_38_19 = F.adaptive_avg_pool2d(self.conv38_19(arm_sources_init[0]), self.size1)
+        feat_10_19 = F.upsample_bilinear(self.conv10_19(arm_sources_init[2]), size=self.size1)
         # feat_19 = self.conv19(sources_init[1])
         s_19 = feat_38_19 + feat_10_19 + arm_sources_init[1]
         sources.append(s_19)
 
-        feat_19_10 = F.adaptive_avg_pool2d(self.conv19_10(arm_sources_init[1]), 10)
+        feat_19_10 = F.adaptive_avg_pool2d(self.conv19_10(arm_sources_init[1]), self.size2)
         # feat_10 = self.conv10(sources_init[2])
-        # feat_5_10 = F.upsample_bilinear(self.conv5_10(sources_init[3]),size=10)
-        s_10 = feat_19_10 + arm_sources_init[2]
+        feat_5_10 = F.upsample_bilinear(self.conv5_10(arm_sources_init[3]),size=self.size2)
+        s_10 = feat_19_10 + arm_sources_init[2]+feat_5_10
         sources.append(s_10)
 
-        feat_10_5 = F.adaptive_avg_pool2d(self.conv10_5(arm_sources_init[2]), 5)
+        feat_10_5 = F.adaptive_avg_pool2d(self.conv10_5(arm_sources_init[2]), self.size3)
         # feat_5 = self.conv5(sources_init[3])
         s_5 = arm_sources_init[3] + feat_10_5
         sources.append(s_5)
@@ -397,10 +404,10 @@ class VGG16Extractor(nn.Module):
         y1_res = torch.mul(sources[1], att3)
         y1_res = self.BasicConv5(y1_res)
 
-        y2 = sources[2] + F.adaptive_avg_pool2d(y0_res, 10)
+        y2 = sources[2] + F.adaptive_avg_pool2d(y0_res, self.size2)
         y2 = self.BasicResConv10(y2)
 
-        y3 = sources[3] + F.adaptive_avg_pool2d(y1_res, 5)
+        y3 = sources[3] + F.adaptive_avg_pool2d(y1_res, self.size3)
         y3 = self.BasicResConv5(y3)
 
         arm_sources.append(self.arm_trans[0](y0))
