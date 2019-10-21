@@ -92,11 +92,11 @@ __C.SOLVER.START_EPOCH = 0
 __C.DATASETS = AttrDict()
 
 VOCROOT = 'data/datasets/VOCdevkit0712/'
-COCOROOT = 'data/datasets/coco2015'
+COCOROOT = '/home/ubuntu/Data/coco'
 
 __C.DATASETS.TRAIN_TYPE = []
 __C.DATASETS.VAL_TYPE = []
-__C.DATASETS.DATAROOT = VOCROOT
+__C.DATASETS.DATAROOT = COCOROOT
 __C.DATASETS.DATA_TYPE = ''
 
 __C.DATASETS.SETS = AttrDict()
