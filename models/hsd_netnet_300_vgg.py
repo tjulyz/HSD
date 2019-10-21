@@ -268,15 +268,14 @@ class VGG16Extractor(nn.Module):
 
         self.conv38_19 = BasicConv(512, 1024, kernel_size=1)
         self.conv19 = BasicConv(1024, 1024, kernel_size=1)
-        self.conv10_19 = BasicConv(512, 1024, kernel_size=1)
+        self.conv10_19 = BasicConv(256, 1024, kernel_size=1)
 
-        self.conv19_10 = BasicConv(1024, 512, kernel_size=1)
-        self.conv10 = BasicConv(512, 512, kernel_size=1)
-        self.conv5_10 = BasicConv(256, 512, kernel_size=1)
+        self.conv19_10 = BasicConv(1024, 256, kernel_size=1)
+        self.conv10 = BasicConv(256, 256, kernel_size=1)
+        self.conv5_10 = BasicConv(256, 256, kernel_size=1)
 
-        self.conv10_5 = BasicConv(512, 256, kernel_size=1)
+        self.conv10_5 = BasicConv(256, 256, kernel_size=1)
         self.conv5 = BasicConv(256, 256, kernel_size=1)
-        self.conv3_5 = BasicConv(256, 256, kernel_size=1)
 
         self.size0 = 40
         self.size1 = 20
@@ -285,15 +284,15 @@ class VGG16Extractor(nn.Module):
 
         # half attention
         self.attention_t5_19 = G_attention(256, 1024, self.size1)
-        self.attention_t10_38 = G_attention(512, 512, self.size0)
+        self.attention_t10_38 = G_attention(256, 512, self.size0)
         #
         # # half add conv
         self.BasicResConv19 = BasicResConv(1024)
         self.BasicResConv38 = BasicResConv(512)
-        self.BasicResConv10 = BasicResConv(512)
+        self.BasicResConv10 = BasicResConv(256)
         self.BasicResConv5 = BasicResConv(256)
 
-        self.BasicConv10 = BasicConv(512, 512, kernel_size=1)
+        self.BasicConv10 = BasicConv(512, 256, kernel_size=1)
         self.BasicConv5 = BasicConv(1024, 256, kernel_size=1)
         ###############################################
 
