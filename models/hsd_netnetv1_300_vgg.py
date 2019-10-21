@@ -333,9 +333,9 @@ class VGG16Extractor(nn.Module):
         arm_sources = list()
 
         for i in range(23):
-            x = self.vgg[i](x)
-            if i == 16:
+            if i==16:
                 source_38 = x
+            x = self.vgg[i](x)
         #38x38
         c2 = x
         # c2 = self.arm_trans[0](c2)
@@ -419,11 +419,11 @@ class VGG16Extractor(nn.Module):
         ###########################################################################
 
         odm_sources = []
-        # up = F.upsample(arm_sources[1], size=arm_sources[0].size()[2:], mode='bilinear')
+        up = F.upsample(arm_sources[1], size=arm_sources[0].size()[2:], mode='bilinear')
         odm_sources.append(self.fe1(arm_sources[0]))
-        # up = F.upsample(arm_sources[2], size=arm_sources[1].size()[2:], mode='bilinear')
+        up = F.upsample(arm_sources[2], size=arm_sources[1].size()[2:], mode='bilinear')
         odm_sources.append(self.fe2(arm_sources[1]))
-        # up = F.upsample(arm_sources[3], size=arm_sources[2].size()[2:], mode='bilinear')
+        up = F.upsample(arm_sources[3], size=arm_sources[2].size()[2:], mode='bilinear')
         odm_sources.append(self.fe3(arm_sources[2]))
         odm_sources.append(self.orm_trans[3](arm_sources[3]))
 
