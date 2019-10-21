@@ -44,7 +44,7 @@ SOLVER:
 DATASETS:
   TRAIN_TYPE: [['2014', 'train'], ['2014', 'valminusminival']]
   VAL_TYPE: [['2014', 'minival']]
-  DATAROOT: 'data/COCO/'
+  DATAROOT: '/home/ubuntu/Data/coco/'
   DATA_TYPE: 'COCO'
 
 TEST:
