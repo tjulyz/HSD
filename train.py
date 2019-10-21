@@ -262,7 +262,7 @@ def main():
     end_epoch = cfg.SOLVER.END_EPOCH
     if not os.path.exists(save_folder):
         os.mkdir(save_folder)
-    # torch.set_default_tensor_type('torch.cuda.FloatTensor')
+    torch.set_default_tensor_type('torch.cuda.FloatTensor')
     net = SSD(cfg)
     print(net)
     if cfg.MODEL.SIZE == '300':
