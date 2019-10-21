@@ -278,6 +278,11 @@ class VGG16Extractor(nn.Module):
         self.conv5 = BasicConv(256, 256, kernel_size=1)
         self.conv3_5 = BasicConv(256, 256, kernel_size=1)
 
+        self.size0 = 40
+        self.size1 = 20
+        self.size2 = 10
+        self.size3 = 5
+
         # half attention
         self.attention_t5_19 = G_attention(256, 1024, self.size1)
         self.attention_t10_38 = G_attention(512, 512, self.size0)
@@ -291,10 +296,7 @@ class VGG16Extractor(nn.Module):
         self.BasicConv10 = BasicConv(512, 512, kernel_size=1)
         self.BasicConv5 = BasicConv(1024, 256, kernel_size=1)
         ###############################################
-        self.size0 = 40
-        self.size1 = 20
-        self.size2 = 10
-        self.size3 = 5
+
 
 
         ####
